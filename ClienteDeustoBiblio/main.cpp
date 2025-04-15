@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 
 	/*EMPIEZA EL PROGRAMA DEL CLIENTE*/
 	char opcion, opcionAdminInicio, usuario[50], contrasenia[50];
-	int *intentos, *resultado;
+	int intentos, resultado;
 	do{
 		opcion =  menuPrincipal();
 		sprintf(sendBuff,"%c",opcion); //almacena opción
@@ -72,9 +72,9 @@ int main(int argc, char *argv[]) {
 				switch(opcionAdminInicio){
 				case '1':
 					recv(s,recvBuff,sizeof(recvBuff),0); //recibir
-					sscanf(recvBuff, "%d", intentos); //obtener
+					sscanf(recvBuff, "%d", &intentos); //obtener
 					recv(s,recvBuff,sizeof(recvBuff),0);
-					sscanf(recvBuff, "%d", resultado); //???
+					sscanf(recvBuff, "%d", &resultado); //???
 
 					cout<<"\033[1;36mIniciando sesion como administrador...\n\033[0m"<<endl;
 					cout<<"Introduce tu nombre de usuario: "<<endl;
@@ -87,14 +87,16 @@ int main(int argc, char *argv[]) {
 					send(s,sendBuff,sizeof(sendBuff),0);  //enviamos
 					recv(s,recvBuff,sizeof(recvBuff),0);
 					cout<<recvBuff<<endl;
+					recv(s,recvBuff,sizeof(recvBuff),0);
+					sscanf(recvBuff,"%d", &resultado);
 
-					while (*resultado != 2 && *intentos > 0){
-						(*intentos)--;
-						if (*resultado == 0){
+					while (resultado != 2 && intentos > 0){
+						(intentos)--;
+						if (resultado == 0){
 							cout<<"Introduce tu usuario (" << intentos << "intentos restantes): " <<endl;
 							cin>>usuario;
 
-						} else if (*resultado == 1){
+						} else if (resultado == 1){
 							cout<<"Introduce tu contraseña (" << intentos << "intentos restantes): " <<endl;
 							cin>>contrasenia;
 						}
