@@ -85,6 +85,7 @@ int main(int argc, char *argv[]) {
 					send(s,sendBuff,sizeof(sendBuff),0); //enviamos
 					sprintf(sendBuff,"%s",contrasenia);  //almacenamos
 					send(s,sendBuff,sizeof(sendBuff),0);  //enviamos
+					//hacer el if
 					recv(s,recvBuff,sizeof(recvBuff),0);
 					cout<<recvBuff<<endl;
 					recv(s,recvBuff,sizeof(recvBuff),0);
