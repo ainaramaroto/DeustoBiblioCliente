@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 
 	/*EMPIEZA EL PROGRAMA DEL CLIENTE*/
 	char opcion, opcionAdminInicio, usuario[50], contrasenia[50];
-	int intentos, resultado;
+	int intentos = 3, resultado;
 	do{
 		opcion =  menuPrincipal();
 		sprintf(sendBuff,"%c",opcion); //almacena opción
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
 					cout<<"\033[1;36mIniciando sesion como administrador...\n\033[0m"<<endl;
 					cout<<"Introduce tu nombre de usuario: "<<endl;
 					cin>>usuario;
-					cout<<"Introduce tu contraseña (" << intentos << "intentos restantes): " <<endl;
+					cout<<"Introduce tu contraseña ( " << intentos << " intentos restantes): " <<endl;
 					cin>>contrasenia;
 					sprintf(sendBuff,"%s",usuario); //almacenamos
 					send(s,sendBuff,sizeof(sendBuff),0); //enviamos
