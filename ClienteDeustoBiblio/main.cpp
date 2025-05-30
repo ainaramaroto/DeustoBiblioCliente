@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 			ntohs(server.sin_port));
 
 	/*EMPIEZA EL PROGRAMA DEL CLIENTE*/
-	char opcion, opcionAdminInicio, usuario[50], contrasenia[50], dni[10], nombre[20], apellido[20], email[50], numeroTlf[10], direccion[50],
+	char opcion, opcionAdminInicio,opcionAdminPrincipal, usuario[50], contrasenia[50], dni[10], nombre[20], apellido[20], email[50], numeroTlf[10], direccion[50],
 		opcionClienteInicio, opcionClientePrincipal, titulo[100]																										 ;
 	int intentos = 3, resultado, encontrado;
 	do{
@@ -72,38 +72,152 @@ int main(int argc, char *argv[]) {
 
 				switch(opcionAdminInicio){
 				case '1':
-					recv(s,recvBuff,sizeof(recvBuff),0); //recibir
-					sscanf(recvBuff, "%d", &intentos); //obtener
-					recv(s,recvBuff,sizeof(recvBuff),0);
-					sscanf(recvBuff, "%d", &resultado); //???
+				do {
+						recv(s, recvBuff, sizeof(recvBuff), 0);
+						sscanf(recvBuff, "%d", &intentos);
+						recv(s, recvBuff, sizeof(recvBuff), 0);
+						sscanf(recvBuff, "%d", &resultado);
 
-					cout<<"\033[1;36mIniciando sesion como administrador...\n\033[0m"<<endl;
-					cout<<"Introduce tu nombre de usuario: "<<endl;
-					cin>>usuario;
-					cout<<"Introduce tu contraseña ( " << intentos << " intentos restantes): " <<endl;
-					cin>>contrasenia;
-					sprintf(sendBuff,"%s",usuario); //almacenamos
-					send(s,sendBuff,sizeof(sendBuff),0); //enviamos
-					sprintf(sendBuff,"%s",contrasenia);  //almacenamos
-					send(s,sendBuff,sizeof(sendBuff),0);  //enviamos
-					//hacer el if
-					recv(s,recvBuff,sizeof(recvBuff),0);
-					cout<<recvBuff<<endl;
-					recv(s,recvBuff,sizeof(recvBuff),0);
-					sscanf(recvBuff,"%d", &resultado);
+						cout << "=== INICIO DE SESIÓN ADMINISTRADOR ===" << endl;
+						cout << "Intentos restantes: " << intentos << endl;
 
-					while (resultado != 2 && intentos > 0){
-						(intentos)--;
-						if (resultado == 0){
-							cout<<"Introduce tu usuario (" << intentos << "intentos restantes): " <<endl;
-							cin>>usuario;
+						cout << "Introduce tu nombre de usuario: ";
+						cin >> usuario;
+						cout << "Introduce tu contraseña: ";
+						cin >> contrasenia;
 
-						} else if (resultado == 1){
-							cout<<"Introduce tu contraseña (" << intentos << "intentos restantes): " <<endl;
-							cin>>contrasenia;
+						sprintf(sendBuff, "%s", usuario);
+						send(s, sendBuff, sizeof(sendBuff), 0);
+						sprintf(sendBuff, "%s", contrasenia);
+						send(s, sendBuff, sizeof(sendBuff), 0);
+
+						recv(s, recvBuff, sizeof(recvBuff), 0);
+						sscanf(recvBuff, "%d", &resultado);
+
+						if (resultado == 2) {
+							recv(s, recvBuff, sizeof(recvBuff), 0);
+							cout << recvBuff << endl;
+
+							do {
+								opcionAdminPrincipal = menuPrincipalAdministrador();
+
+								sprintf(sendBuff, "%c", opcionAdminPrincipal);
+								send(s, sendBuff, sizeof(sendBuff), 0);
+
+								recv(s, recvBuff, sizeof(recvBuff), 0);
+								cout << recvBuff << endl;
+
+								switch(opcionAdminPrincipal){
+								case '1':
+									recv(s, recvBuff, sizeof(recvBuff), 0);
+									cout << recvBuff;
+
+									char isbn[20];
+									cin >> isbn;
+									cin.ignore();
+
+									sprintf(sendBuff, "%s", isbn);
+									send(s, sendBuff, sizeof(sendBuff), 0);
+
+									recv(s, recvBuff, sizeof(recvBuff), 0);
+									cout << recvBuff << endl;
+
+									cout << "Presiona Enter para continuar...";
+									cin.get();
+									break;
+
+								case '2':
+									{
+										string received_data = "";
+										char buffer[1024];
+										int bytes_received;
+
+										while(true) {
+											memset(buffer, 0, sizeof(buffer));
+											bytes_received = recv(s, buffer, sizeof(buffer) - 1, 0);
+
+											if (bytes_received <= 0) {
+												cout << "Error al recibir datos del servidor.\n";
+												break;
+											}
+
+											buffer[bytes_received] = '\0';
+											received_data += string(buffer);
+
+											if (received_data.find("END_CLIENTS") != string::npos) {
+												size_t pos = received_data.find("END_CLIENTS");
+												received_data = received_data.substr(0, pos);
+												break;
+											}
+										}
+
+										cout << received_data;
+										cout << "\nPresiona Enter para continuar...";
+										cin.ignore();
+										cin.get();
+										break;
+									}
+
+								case '3':
+									{
+										string received_data = "";
+										char buffer[1024];
+										int bytes_received;
+
+										while(true) {
+											memset(buffer, 0, sizeof(buffer));
+											bytes_received = recv(s, buffer, sizeof(buffer) - 1, 0);
+
+											if (bytes_received <= 0) {
+												cout << "Error al recibir datos del servidor.\n";
+												break;
+											}
+
+											buffer[bytes_received] = '\0';
+											received_data += string(buffer);
+
+											if (received_data.find("END_BOOKS") != string::npos) {
+												size_t pos = received_data.find("END_BOOKS");
+												received_data = received_data.substr(0, pos);
+												break;
+											}
+										}
+
+										cout << received_data;
+										cout << "\nPresiona Enter para continuar...";
+										cin.ignore();
+										cin.get();
+										break;
+									}
+
+								case '0':
+									break;
+
+								default:
+									break;
+								}
+
+							} while (opcionAdminPrincipal != '0');
+
+						} else {
+							recv(s, recvBuff, sizeof(recvBuff), 0);
+							cout << recvBuff << endl;
 						}
-				}
-				break;
+
+					} while (resultado != 2 && intentos > 0);
+
+					if (resultado != 2 && intentos <= 0) {
+						cout << "Acceso denegado por exceder el número de intentos." << endl;
+					}
+					break;
+
+				case '0':
+					// Volver al menú principal
+					break;
+
+				default:
+					cout << "Opción no válida." << endl;
+					break;
 				}
 			}while (opcionAdminInicio != '0');
 			break;
@@ -326,6 +440,7 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
+
 
 
 

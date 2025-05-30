@@ -66,9 +66,8 @@ char menuPrincipalAdministrador(){
 
 	cout<<"\033[1;36mMenu Principal del Administrador\n\033[0m"<<endl;
 	cout<<"1. Eliminar libro\n"<<endl;
-	cout<<"2. Añadir libro\n"<<endl;
-	cout<<"3. Visualizar datos de los cliente\n"<<endl;
-	cout<<"4. Visualizar datos de los libros\n"<<endl;
+	cout<<"2. Visualizar datos de los cliente\n"<<endl;
+	cout<<"3. Visualizar datos de los libros\n"<<endl;
 	cout<<"0. Salir\n"<<endl;
 	cout<<"\033[1;36mElige una opción: \033[0m"<<endl;
 
